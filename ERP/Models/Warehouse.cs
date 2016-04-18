@@ -10,7 +10,8 @@ namespace ERP.Models
         public int Id { get; set; }
         public String Name { get; set; }
         public String Location { get; set; }
-        public virtual ICollection<Item> Items { get; set; } 
+        public virtual ICollection<Item> Items { get; set; }
+        public virtual ICollection<ApplicationUser> Workers { get; set; } 
 
     }
 }
