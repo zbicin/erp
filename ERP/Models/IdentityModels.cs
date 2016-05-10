@@ -33,5 +33,6 @@ namespace ERP.Models
 
         public System.Data.Entity.DbSet<ERP.Models.Warehouse> Warehouses { get; set; }
         public System.Data.Entity.DbSet<ERP.Models.Item> Items { get; set; }
+        public System.Data.Entity.DbSet<ERP.Models.Order> Orders { get; set; }
     }
 }
