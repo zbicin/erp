@@ -27,7 +27,7 @@ namespace ERP.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Item item = db.Items.Find(id);
+            var item = db.Items.Find(id);
             if (item == null)
             {
                 return HttpNotFound();

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ERP.Models;
+using System.Data.Entity;
 
 namespace ERP.Controllers
 {
@@ -19,9 +21,18 @@ namespace ERP.Controllers
 
         //
         // GET: /Order/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var order = db.Orders.Find(id);
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+            return View(order);
         }
 
         //
@@ -34,17 +45,17 @@ namespace ERP.Controllers
         //
         // POST: /Order/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Order order)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // TODO: Add insert logic here
-
+                db.Orders.Add(order);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            catch
+            else
             {
-                return View();
+                return View(order);
             }
         }
 
@@ -52,18 +63,20 @@ namespace ERP.Controllers
         // GET: /Order/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            Order order = db.Orders.SingleOrDefault(o => o.Id == id);
+            return View(order);
         }
 
         //
         // POST: /Order/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(Order order)
         {
             try
             {
                 // TODO: Add update logic here
-
+                db.Entry(order).State = EntityState.Modified;
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             catch
