@@ -48,18 +48,36 @@ namespace ERP.Controllers
         //
         // POST: /Order/Create
         [HttpPost]
-        public ActionResult Create(Order order)
+        public ActionResult Create(OrderViewModel viewModel)
         {
-            if (ModelState.IsValid)
+
+            Order order = new Order
             {
+                Id = viewModel.Id,
+                CanceledAt = viewModel.CanceledAt,
+                CompletedAt = viewModel.CompletedAt,
+                CreatedAt = viewModel.CreatedAt,
+                DeliveredAt = viewModel.DeliveredAt,
+                ShippedAt = viewModel.ShippedAt
+            };
+
+            if (viewModel.SelectedItems != null)
+            {
+                foreach (OrderElement element in viewModel.SelectedItems)
+                {
+                    OrderElement orderElement = new OrderElement
+                        {
+                            ItemName = element.ItemName,
+                            Quantity = element.Quantity,
+                            OrderId = viewModel.Id
+                        };
+                        db.OrderElements.Add(orderElement);
+                    }
+                }
+
                 db.Orders.Add(order);
                 db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                return View(order);
-            }
+                return RedirectToAction("Index");            
         }
 
         //

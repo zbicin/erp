@@ -1,7 +1,14 @@
-﻿app.controller('OrderEditController', function ($scope, $http, order) {
-    order.SelectedItems = order.SelectedItems == null ? [] : order.SelectedItems;
+﻿app.controller('OrderCreateController', function($scope, $http) {
+    $scope.order = {
+        Id: 0,
+        CreatedAt: "",
+        CompletedAt: "",
+        ShippedAt: "",
+        DeliveredAt : "",
+        CanceledAt : "",
+        SelectedItems: []
+    };
 
-    $scope.order = order;
     $scope.items = [];
 
     $scope.LoadItems = function () {
@@ -22,9 +29,9 @@
         $scope.order.SelectedItems.splice(lastItem);
     };
 
-    $scope.sendForm = function() {
-        $http.post("/Orders/Edit", { viewModel: $scope.order })
-            .success(function() {
+    $scope.sendForm = function () {
+        $http.post("/Orders/Create", { viewModel: $scope.order })
+            .success(function () {
 
                 window.location.href = '/Orders/Index';
             });

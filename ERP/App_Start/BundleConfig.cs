@@ -31,7 +31,8 @@ namespace ERP
                         "~/Scripts/angular.min.js",
                         "~/Scripts/app.js",
                         
-                        "~/Content/ng/Controllers/OrderEditController.js"));
+                        "~/Content/ng/Controllers/OrderEditController.js",
+                        "~/Content/ng/Controllers/OrderCreateController.js"));
         }
     }
 }
