@@ -26,6 +26,12 @@ namespace ERP
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/angular").Include(
+                        "~/Scripts/angular.min.js",
+                        "~/Scripts/app.js",
+                        
+                        "~/Content/ng/Controllers/OrderEditController.js"));
         }
     }
 }

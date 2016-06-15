@@ -8,6 +8,7 @@ namespace ERP.Models
     public class OrderElement
     {
         public int Id { get; set; }
+        public int OrderId { get; set; }
         public String ItemName { get; set; }
         public int Quantity { get; set; }
     }

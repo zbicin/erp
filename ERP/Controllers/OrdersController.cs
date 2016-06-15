@@ -6,6 +6,9 @@ using System.Web;
 using System.Web.Mvc;
 using ERP.Models;
 using System.Data.Entity;
+using System.Threading.Tasks;
+using ERP.ViewModels;
+using Newtonsoft.Json;
 
 namespace ERP.Controllers
 {
@@ -64,25 +67,67 @@ namespace ERP.Controllers
         public ActionResult Edit(int id)
         {
             Order order = db.Orders.SingleOrDefault(o => o.Id == id);
-            return View(order);
+            List<Item> availaItemstems = db.Items.ToList();
+            OrderViewModel orderViewModel = new OrderViewModel();
+
+            IEnumerable<SelectListItem> selectList = db.Items.Select(s => new SelectListItem{
+                    Text = s.Name,
+                    Value = s.Id.ToString()
+                });
+            orderViewModel.Id = id;
+            orderViewModel.AvailableItems = selectList;
+            orderViewModel.CanceledAt = order.CanceledAt;
+            orderViewModel.CompletedAt = order.CompletedAt;
+            orderViewModel.CreatedAt = order.CreatedAt;
+            orderViewModel.DeliveredAt = order.DeliveredAt;
+            orderViewModel.ShippedAt = order.ShippedAt;
+
+            List<OrderElement> elements = db.OrderElements.Where(el => el.OrderId == id).ToList();
+            orderViewModel.SelectedItems = elements;
+            return View(orderViewModel);
         }
 
         //
         // POST: /Order/Edit/5
         [HttpPost]
-        public ActionResult Edit(Order order)
+        public ActionResult Edit(OrderViewModel viewModel)
         {
-            try
+            Order order = new Order
             {
-                // TODO: Add update logic here
-                db.Entry(order).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch
+                Id = viewModel.Id,
+                CanceledAt = viewModel.CanceledAt,
+                CompletedAt = viewModel.CompletedAt,
+                CreatedAt = viewModel.CreatedAt,
+                DeliveredAt = viewModel.DeliveredAt,
+                ShippedAt = viewModel.ShippedAt
+            };
+            
+            if (viewModel.SelectedItems != null)
             {
-                return View();
+                foreach (OrderElement element in viewModel.SelectedItems)
+                {
+                    OrderElement orderElement = db.OrderElements.SingleOrDefault(o => o.Id == element.Id);
+                    if (orderElement != null)
+                    {
+                        orderElement.Quantity = element.Quantity;
+                        db.Entry(orderElement).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        orderElement = new OrderElement
+                        {
+                            ItemName = element.ItemName,
+                            Quantity = element.Quantity,
+                            OrderId = viewModel.Id
+                        };
+                        db.OrderElements.Add(orderElement);
+                    }
+                }
             }
+
+            db.Entry(order).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         //
@@ -107,6 +152,13 @@ namespace ERP.Controllers
             {
                 return View();
             }
+        }
+
+        public async Task<string> GetAvailableItems()
+        {
+            List<Item> items = db.Items.ToList();
+
+            return JsonConvert.SerializeObject(items);
         }
     }
 }

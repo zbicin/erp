@@ -31,8 +31,9 @@ namespace ERP.Models
             return new ApplicationDbContext();
         }
 
-        public System.Data.Entity.DbSet<ERP.Models.Warehouse> Warehouses { get; set; }
-        public System.Data.Entity.DbSet<ERP.Models.Item> Items { get; set; }
-        public System.Data.Entity.DbSet<ERP.Models.Order> Orders { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderElement> OrderElements { get; set; }
     }
 }
