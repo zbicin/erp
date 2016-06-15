@@ -160,16 +160,18 @@ namespace ERP.Controllers
         [HttpPost]
         public ActionResult Delete(int id, FormCollection collection)
         {
-            try
-            {
                 // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+                Order order = db.Orders.SingleOrDefault(o => o.Id == id);
+                if(order != null)
+                {
+                    db.Orders.Remove(order);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View();
+                }
         }
 
         public async Task<string> GetAvailableItems()
