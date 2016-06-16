@@ -67,7 +67,14 @@ namespace ERP.Controllers
                             OrderId = viewModel.Id
                         };
                         db.OrderElements.Add(orderElement);
-                    }
+
+                        Item affectedItemInWarehouse = db.Items.SingleOrDefault(i => i.Name == orderElement.ItemName);
+                        if (affectedItemInWarehouse != null)
+                        {
+                            affectedItemInWarehouse.QuantityInStock -= orderElement.Quantity;
+                            db.Entry(affectedItemInWarehouse).State = EntityState.Modified;
+                        }
+                    }                    
                 }
 
                 db.Orders.Add(order);
@@ -115,29 +122,6 @@ namespace ERP.Controllers
                 DeliveredAt = viewModel.DeliveredAt,
                 ShippedAt = viewModel.ShippedAt
             };
-            
-            if (viewModel.SelectedItems != null)
-            {
-                foreach (OrderElement element in viewModel.SelectedItems)
-                {
-                    OrderElement orderElement = db.OrderElements.SingleOrDefault(o => o.Id == element.Id);
-                    if (orderElement != null)
-                    {
-                        orderElement.Quantity = element.Quantity;
-                        db.Entry(orderElement).State = EntityState.Modified;
-                    }
-                    else
-                    {
-                        orderElement = new OrderElement
-                        {
-                            ItemName = element.ItemName,
-                            Quantity = element.Quantity,
-                            OrderId = viewModel.Id
-                        };
-                        db.OrderElements.Add(orderElement);
-                    }
-                }
-            }
 
             switch (viewModel.Status)
             {
@@ -153,6 +137,55 @@ namespace ERP.Controllers
                 case "Shipped":
                     order.ShippedAt = now;
                     break;
+            }
+
+            if (viewModel.SelectedItems != null)
+            {
+                foreach (OrderElement element in viewModel.SelectedItems)
+                {
+                    bool amountChanged = false;
+                    int amountDifference = 0;
+
+                    OrderElement orderElement = db.OrderElements.SingleOrDefault(o => o.Id == element.Id);
+                    if (orderElement != null)
+                    {
+                        if (element.Quantity != orderElement.Quantity)
+                        {
+                            amountChanged = true;
+                            amountDifference = element.Quantity - orderElement.Quantity;
+                        }
+                        orderElement.Quantity = element.Quantity;
+                        db.Entry(orderElement).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        amountChanged = true;
+                        amountDifference = element.Quantity;
+                        orderElement = new OrderElement
+                        {
+                            ItemName = element.ItemName,
+                            Quantity = element.Quantity,
+                            OrderId = viewModel.Id
+                        };
+                        db.OrderElements.Add(orderElement);
+                    }
+
+                    Item affectedItemInWarehouse = db.Items.SingleOrDefault(i => i.Name == orderElement.ItemName);
+                    if (affectedItemInWarehouse != null)
+                    {
+                        if (order.Status == Order.OrderStatus.Canceled)
+                        {
+                            affectedItemInWarehouse.QuantityInStock += orderElement.Quantity;
+                            db.Entry(affectedItemInWarehouse).State = EntityState.Modified;
+                        }
+                        else
+                        if (amountChanged == true)
+                        {
+                            affectedItemInWarehouse.QuantityInStock -= amountDifference;
+                            db.Entry(affectedItemInWarehouse).State = EntityState.Modified;
+                        }   
+                    }
+                }
             }
 
             db.Entry(order).State = EntityState.Modified;
@@ -176,6 +209,17 @@ namespace ERP.Controllers
                 Order order = db.Orders.SingleOrDefault(o => o.Id == id);
                 if(order != null)
                 {
+                    if (order.Status == Order.OrderStatus.Created || order.Status == Order.OrderStatus.Completed)
+                    {
+                        List<OrderElement> orderElements = db.OrderElements.Where(o => o.OrderId == id).ToList();
+                        foreach (var orderElement in orderElements)
+                        {
+                            Item item = db.Items.SingleOrDefault(i => i.Name == orderElement.ItemName);
+                            item.QuantityInStock += orderElement.Quantity;
+                            db.Entry(item).State = EntityState.Modified;
+                        }
+                    }
+
                     db.Orders.Remove(order);
                     db.SaveChanges();
                     return RedirectToAction("Index");
