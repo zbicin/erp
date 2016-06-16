@@ -26,6 +26,10 @@
         <th>
             @Html.DisplayNameFor(model => model.CanceledAt)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status
+            )
+        </th>
         <th></th>
     </tr>
 
@@ -45,6 +49,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.CanceledAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
