@@ -59,9 +59,32 @@ namespace ERP.Controllers
         //
         // POST: /Order/Create
         [HttpPost]
-        public ActionResult Create(OrderViewModel viewModel)
+        public string Create(OrderViewModel viewModel)
         {
             DateTime createdAt = DateTime.Now;
+
+            if (viewModel.SelectedItems != null){
+                List<OrderElement> distinctOrderElements =
+                    viewModel.SelectedItems.GroupBy(s => s.ItemName).Select(s => new OrderElement()
+                    {
+                        ItemName = s.First().ItemName,
+                        Quantity = s.Sum(q => q.Quantity)
+
+                    }).ToList();
+
+
+                foreach (var element in distinctOrderElements)
+                {
+                    Item item = db.Items.SingleOrDefault(e => e.Name == element.ItemName);
+                    if (element.Quantity > item.QuantityInStock)
+                    {
+                        ViewBag.ErrorMessage = "Number of items in order exceeds warehouse stock";
+                        ModelState.AddModelError("", "Number of items in order exceeds warehouse stock");
+                        return "Number of items in order exceeds warehouse stock";
+                    }
+                }
+            }
+        
             Order order = new Order
             {
                 CreatedAt = createdAt
@@ -72,25 +95,25 @@ namespace ERP.Controllers
                 foreach (OrderElement element in viewModel.SelectedItems)
                 {
                     OrderElement orderElement = new OrderElement
-                        {
-                            ItemName = element.ItemName,
-                            Quantity = element.Quantity,
-                            OrderId = viewModel.Id
-                        };
-                        db.OrderElements.Add(orderElement);
+                    {
+                        ItemName = element.ItemName,
+                        Quantity = element.Quantity,
+                        OrderId = viewModel.Id
+                    };
+                    db.OrderElements.Add(orderElement);
 
-                        Item affectedItemInWarehouse = db.Items.SingleOrDefault(i => i.Name == orderElement.ItemName);
-                        if (affectedItemInWarehouse != null)
-                        {
-                            affectedItemInWarehouse.QuantityInStock -= orderElement.Quantity;
-                            db.Entry(affectedItemInWarehouse).State = EntityState.Modified;
-                        }
-                    }                    
-                }
+                    Item affectedItemInWarehouse = db.Items.SingleOrDefault(i => i.Name == orderElement.ItemName);
+                    if (affectedItemInWarehouse != null)
+                    {
+                        affectedItemInWarehouse.QuantityInStock -= orderElement.Quantity;
+                        db.Entry(affectedItemInWarehouse).State = EntityState.Modified;
+                    }
+                }                    
+            }
 
-                db.Orders.Add(order);
-                db.SaveChanges();
-                return RedirectToAction("Index");            
+            db.Orders.Add(order);
+            db.SaveChanges();
+            return "OK";            
         }
 
         //
@@ -120,9 +143,32 @@ namespace ERP.Controllers
         //
         // POST: /Order/Edit/5
         [HttpPost]
-        public ActionResult Edit(OrderViewModel viewModel)
+        public string Edit(OrderViewModel viewModel)
         {
             DateTime now = DateTime.Now;
+
+            if (viewModel.SelectedItems != null)
+            {
+                List<OrderElement> distinctOrderElements =
+                    viewModel.SelectedItems.GroupBy(s => s.ItemName).Select(s => new OrderElement()
+                    {
+                        ItemName = s.First().ItemName,
+                        Quantity = s.Sum(q => q.Quantity)
+
+                    }).ToList();
+
+
+                foreach (var element in distinctOrderElements)
+                {
+                    Item item = db.Items.SingleOrDefault(e => e.Name == element.ItemName);
+                    if (element.Quantity > item.QuantityInStock)
+                    {
+                        ViewBag.ErrorMessage = "Number of items in order exceeds warehouse stock";
+                        ModelState.AddModelError("", "Number of items in order exceeds warehouse stock");
+                        return "Number of items in order exceeds warehouse stock";
+                    }
+                }
+            }
 
             Order order = new Order
             {
@@ -201,7 +247,7 @@ namespace ERP.Controllers
 
             db.Entry(order).State = EntityState.Modified;
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return "OK";
         }
 
         //

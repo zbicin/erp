@@ -5,12 +5,10 @@
 }
 
 <h2>Create</h2>
-
-<div ng-app="ERP" ng-controller="OrderCreateController">
-
+    <div ng-app="ERP" ng-controller="OrderCreateController">
         <div class="form-horizontal">
             <h4>Order</h4>
-            <hr />
+            <hr/>
             <div>
                 <fieldset data-ng-repeat="choice in order.SelectedItems">
                     <select ng-model="choice.ItemName">
@@ -28,10 +26,10 @@
                 </div>
             </div>
         </div>
-</div>
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+    </div>
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

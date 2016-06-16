@@ -32,9 +32,13 @@
 
     $scope.sendForm = function() {
         $http.post("/Orders/Edit", { viewModel: $scope.order })
-            .success(function() {
-
-                window.location.href = '/Orders/Index';
+            .then(function(response) {
+                if (response.data === "OK") {
+                    window.location.href = '/Orders/Index';
+                }
+                else {
+                    alert(response.data);
+                }
             });
     };
 });

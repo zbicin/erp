@@ -30,10 +30,13 @@
     };
 
     $scope.sendForm = function () {
-        $http.post("/Orders/Create", { viewModel: $scope.order })
-            .success(function () {
-
+        $http.post("/Orders/Create", { viewModel: $scope.order }).then(function(response) {
+            if (response.data === "OK") {
                 window.location.href = '/Orders/Index';
-            });
+            }
+            else {
+                alert(response.data);    
+            }
+        }); 
     };
 });
