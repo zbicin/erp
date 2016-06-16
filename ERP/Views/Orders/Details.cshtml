@@ -1,4 +1,4 @@
-﻿@model ERP.Models.Order
+﻿@model ERP.ViewModels.OrderViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -51,6 +51,19 @@
         </dd>
 
     </dl>
+    <div>
+        <h4>Items</h4>
+        <dl>
+            @foreach (var orderElement in Model.SelectedItems)
+            {
+                <dt>Name</dt>
+                <dd>@orderElement.ItemName</dd>
+                <dt>Quantity</dt>
+                <dd>@orderElement.Quantity</dd>
+                <br />
+            }
+        </dl>
+    </div>
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |

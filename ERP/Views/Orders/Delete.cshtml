@@ -1,4 +1,4 @@
-﻿@model ERP.Models.Order
+﻿@model ERP.ViewModels.OrderViewModel
 
 @{
     ViewBag.Title = "Delete";
@@ -50,8 +50,22 @@
         <dd>
             @Html.DisplayFor(model => model.CanceledAt)
         </dd>
-
     </dl>
+    <div>
+        <h4>Items</h4>
+        <dl>
+            @foreach (var orderElement in Model.SelectedItems)
+            {
+                <dt>Name</dt>
+                <dd>@orderElement.ItemName</dd>
+                <dt>Quantity</dt>
+                <dd>@orderElement.Quantity</dd>
+                <br/>
+            }
+        </dl>
+    </div>
+
+
 
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()

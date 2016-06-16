@@ -31,11 +31,22 @@ namespace ERP.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var order = db.Orders.Find(id);
+
+            OrderViewModel orderViewModel = new OrderViewModel();           
+            orderViewModel.CanceledAt = order.CanceledAt;
+            orderViewModel.CompletedAt = order.CompletedAt;
+            orderViewModel.CreatedAt = order.CreatedAt;
+            orderViewModel.DeliveredAt = order.DeliveredAt;
+            orderViewModel.ShippedAt = order.ShippedAt;
+            orderViewModel.Status = order.Status.ToString();
+            List<OrderElement> elements = db.OrderElements.Where(el => el.OrderId == id).ToList();
+            orderViewModel.SelectedItems = elements;
+
             if (order == null)
             {
                 return HttpNotFound();
             }
-            return View(order);
+            return View(orderViewModel);
         }
 
         //
@@ -197,6 +208,24 @@ namespace ERP.Controllers
         // GET: /Order/Delete/5
         public ActionResult Delete(int id)
         {
+            Order order = db.Orders.SingleOrDefault(o => o.Id == id);
+
+            if (order != null)
+            {
+                OrderViewModel orderViewModel = new OrderViewModel();
+                orderViewModel.Id = id;                
+                orderViewModel.CanceledAt = order.CanceledAt;
+                orderViewModel.CompletedAt = order.CompletedAt;
+                orderViewModel.CreatedAt = order.CreatedAt;
+                orderViewModel.DeliveredAt = order.DeliveredAt;
+                orderViewModel.ShippedAt = order.ShippedAt;
+                orderViewModel.Status = order.Status.ToString();
+                List<OrderElement> elements = db.OrderElements.Where(el => el.OrderId == id).ToList();
+                orderViewModel.SelectedItems = elements;
+
+                return View(orderViewModel);
+            }
+
             return View();
         }
 
