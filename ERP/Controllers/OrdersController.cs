@@ -50,15 +50,10 @@ namespace ERP.Controllers
         [HttpPost]
         public ActionResult Create(OrderViewModel viewModel)
         {
-
+            DateTime createdAt = DateTime.Now;
             Order order = new Order
             {
-                Id = viewModel.Id,
-                CanceledAt = viewModel.CanceledAt,
-                CompletedAt = viewModel.CompletedAt,
-                CreatedAt = viewModel.CreatedAt,
-                DeliveredAt = viewModel.DeliveredAt,
-                ShippedAt = viewModel.ShippedAt
+                CreatedAt = createdAt
             };
 
             if (viewModel.SelectedItems != null)
@@ -84,8 +79,7 @@ namespace ERP.Controllers
         // GET: /Order/Edit/5
         public ActionResult Edit(int id)
         {
-            Order order = db.Orders.SingleOrDefault(o => o.Id == id);
-            List<Item> availaItemstems = db.Items.ToList();
+            Order order = db.Orders.SingleOrDefault(o => o.Id == id);            
             OrderViewModel orderViewModel = new OrderViewModel();
 
             IEnumerable<SelectListItem> selectList = db.Items.Select(s => new SelectListItem{
@@ -99,7 +93,7 @@ namespace ERP.Controllers
             orderViewModel.CreatedAt = order.CreatedAt;
             orderViewModel.DeliveredAt = order.DeliveredAt;
             orderViewModel.ShippedAt = order.ShippedAt;
-
+            orderViewModel.Status = order.Status.ToString();
             List<OrderElement> elements = db.OrderElements.Where(el => el.OrderId == id).ToList();
             orderViewModel.SelectedItems = elements;
             return View(orderViewModel);
@@ -110,6 +104,8 @@ namespace ERP.Controllers
         [HttpPost]
         public ActionResult Edit(OrderViewModel viewModel)
         {
+            DateTime now = DateTime.Now;
+
             Order order = new Order
             {
                 Id = viewModel.Id,
@@ -141,6 +137,22 @@ namespace ERP.Controllers
                         db.OrderElements.Add(orderElement);
                     }
                 }
+            }
+
+            switch (viewModel.Status)
+            {
+                case "Canceled":
+                    order.CanceledAt = now;
+                    break;
+                case "Completed":
+                    order.CompletedAt = now;
+                    break;
+                case "Delivered":
+                    order.DeliveredAt = now;
+                    break;
+                case "Shipped":
+                    order.ShippedAt = now;
+                    break;
             }
 
             db.Entry(order).State = EntityState.Modified;

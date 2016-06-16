@@ -18,5 +18,7 @@ namespace ERP.ViewModels
 
         public List<OrderElement> SelectedItems { get; set; }
         public IEnumerable<SelectListItem> AvailableItems { get; set; }
+
+        public string Status { get; set; }
     }
 }

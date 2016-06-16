@@ -1,6 +1,14 @@
 ﻿app.controller('OrderEditController', function ($scope, $http, order) {
     order.SelectedItems = order.SelectedItems == null ? [] : order.SelectedItems;
 
+    $scope.states = [
+    { Name: "Created" },
+    { Name: "Completed" },
+    { Name: "Shipped" },
+    { Name: "Delivered" },
+    { Name: "Canceled"}
+    ];
+            
     $scope.order = order;
     $scope.items = [];
 
