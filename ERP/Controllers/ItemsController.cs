@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using ERP.Models;
@@ -16,7 +17,17 @@ namespace ERP.Controllers
         // GET: /Items/
         public ActionResult Index()
         {
-            return View(db.Items.ToList());
+            List<Item> items = db.Items.ToList();
+            ViewBag.AlertMessages = new List<string>();
+            for(int i = 0; i < items.Count; i++)
+            {
+                if (items[i].QuantityInStock < 5)
+                {
+                    ViewBag.AlertMessages.Add(items[i].Name + " - low quantity in stock");
+                }
+            }            
+
+            return View(items);
         }
 
         //
