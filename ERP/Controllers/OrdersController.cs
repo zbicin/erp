@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 namespace ERP.Controllers
 {
+    [Authorize]
     public class OrdersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
