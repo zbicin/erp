@@ -1,0 +1,41 @@
+﻿@model ERP.ViewModels.ReportViewModel
+@{
+    ViewBag.Title = "Report";
+}
+
+<h2>Report - @DateTime.Now.ToString("dd.MM.yyyy")</h2>
+
+<h3>Orders</h3>
+<table class="table">
+    <tr>
+        <th>Warehouse</th>
+        <th>Created Orders</th>
+        <th>Completed Orders</th>
+        <th>Shipped Orders</th>
+        <th>Delivered Orders</th>
+        <th>Canceled Orders</th>
+    </tr>
+    <tr>
+        <td></td>
+        <td>@Model.CreatedOrders</td>
+        <td>@Model.CompletedOrders</td>
+        <td>@Model.ShippedOrders</td>
+        <td>@Model.DeliveredOrders</td>
+        <td>@Model.CanceledOrders</td>
+    </tr>
+</table>
+
+<h3>Items</h3>
+<table class="table">
+    <tr>
+        <th>Item</th>
+        <th>Quantity in stock</th>
+    </tr>
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.QuantityInStock</td>
+        </tr>
+    }
+</table>

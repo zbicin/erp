@@ -312,5 +312,20 @@ namespace ERP.Controllers
 
             return JsonConvert.SerializeObject(items);
         }
+
+        public ActionResult Report()
+        {
+            ReportViewModel viewModel = new ReportViewModel()
+            {
+                Orders = db.Orders.ToList(),
+                CreatedOrders = db.Orders.Count(o => o.CreatedAt != null),
+                CompletedOrders = db.Orders.Count(o => o.CompletedAt != null),
+                ShippedOrders = db.Orders.Count(o => o.ShippedAt != null),
+                DeliveredOrders = db.Orders.Count(o => o.DeliveredAt != null),
+                CanceledOrders = db.Orders.Count(o => o.CanceledAt != null),
+                Items = db.Items.ToList()
+            };
+            return View(viewModel);
+        }
     }
 }
