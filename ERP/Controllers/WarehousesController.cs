@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace ERP.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class WarehousesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

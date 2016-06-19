@@ -10,6 +10,7 @@ using ERP.Models;
 
 namespace ERP.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
