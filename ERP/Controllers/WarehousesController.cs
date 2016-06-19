@@ -10,7 +10,7 @@ using ERP.Models;
 
 namespace ERP.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class WarehousesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

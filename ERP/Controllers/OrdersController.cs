@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace ERP.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin, accountant")]
     public class OrdersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
