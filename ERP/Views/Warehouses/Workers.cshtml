@@ -1,0 +1,42 @@
+﻿@model ERP.Models.Warehouse
+
+@{
+    ViewBag.Title = "Workers";
+}
+
+<h2>Workers</h2>
+
+<div>
+    <h4>Warehouse @Model.Name</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <h5>Assigned workers</h5>
+            <ul>
+                @foreach (var singleWorker in Model.Workers)
+                {
+                    <li>
+                        @singleWorker.UserName
+                        @Html.ActionLink("Remove", "RemoveWorker", new { WorkerId = singleWorker.Id, WarehouseId = Model.Id })
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h5>Available workers</h5>
+            <ul>
+                @foreach (var singleWorker in ViewBag.AvailableWorkers)
+                {
+                    <li>
+                        @singleWorker.UserName
+                        @Html.ActionLink("Assign", "AssignWorker", new { WorkerId = singleWorker.Id, WarehouseId = Model.Id })
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

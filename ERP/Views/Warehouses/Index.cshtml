@@ -34,12 +34,13 @@
             @Html.ActionLink(item.Items.Count.ToString(), "Details", new { id = item.Id })
         </td>
         <td>
-            @Html.ActionLink(item.Workers.Count.ToString(), "Details", new { id = item.Id })
+            @item.Workers.Count.ToString()
+            @Html.ActionLink("Modify", "Workers", new {id = item.Id})
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
+            @Html.ActionLink("Details", "Details", new {id = item.Id}) |
+            @Html.ActionLink("Delete", "Delete", new {id = item.Id})
         </td>
     </tr>
 }

@@ -4,15 +4,31 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using ERP.Models;
+using ERP.ViewModels;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace ERP.Controllers
 {
     public class WarehousesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationUserManager _userManager;
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
 
         // GET: Warehouses
         public ActionResult Index()
@@ -122,6 +138,39 @@ namespace ERP.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public ActionResult Workers(int id)
+        {
+            Warehouse warehouse = db.Warehouses.Find(id);
+
+            ViewBag.AvailableWorkers = db.Users.ToList().Where(u => !warehouse.Workers.Contains(u)).ToList();
+
+            return View(warehouse);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> AssignWorker(int WarehouseId, string WorkerId)
+        {
+            Warehouse warehouse = db.Warehouses.Find(WarehouseId);
+            ApplicationUser user = db.Users.Single(w => w.Id == WorkerId);
+
+            warehouse.Workers.Add(user);
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Workers", new {id = warehouse.Id});
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> RemoveWorker(int WarehouseId, string WorkerId)
+        {
+            Warehouse warehouse = db.Warehouses.Find(WarehouseId);
+            ApplicationUser user = warehouse.Workers.Single(w => w.Id == WorkerId);
+
+            warehouse.Workers.Remove(user);
+            await db.SaveChangesAsync();
+
+            return RedirectToAction("Workers", new { id = warehouse.Id });
         }
     }
 }
