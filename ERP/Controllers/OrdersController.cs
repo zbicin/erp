@@ -8,6 +8,7 @@ using ERP.Models;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using ERP.ViewModels;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 
 namespace ERP.Controllers
@@ -322,9 +323,27 @@ namespace ERP.Controllers
                 CompletedOrders = db.Orders.Count(o => o.CompletedAt != null),
                 ShippedOrders = db.Orders.Count(o => o.ShippedAt != null),
                 DeliveredOrders = db.Orders.Count(o => o.DeliveredAt != null),
-                CanceledOrders = db.Orders.Count(o => o.CanceledAt != null),
-                Items = db.Items.ToList()
+                CanceledOrders = db.Orders.Count(o => o.CanceledAt != null)
             };
+            List<OrderElement> items = db.OrderElements.DistinctBy(o => o.ItemName).ToList();
+            List<Item> warehouseItems = db.Items.ToList();
+            List<ReportItemViewModel> itemViewModels = new List<ReportItemViewModel>();
+            foreach (var item in items)
+            {
+                ReportItemViewModel itemToAdd = new ReportItemViewModel();
+                itemToAdd.Name = item.ItemName;
+                itemToAdd.QuantityInOrders = db.OrderElements.Where(i => i.ItemName == item.ItemName).Sum(i => i.Quantity);
+
+                
+                Item itemFromWarehouse = warehouseItems.SingleOrDefault(w => w.Name == item.ItemName);
+                if (itemFromWarehouse != null)
+                {
+                    itemToAdd.QuantityInStock = itemFromWarehouse.QuantityInStock;
+                }
+                itemViewModels.Add(itemToAdd);
+            }
+            viewModel.Items = itemViewModels;
+
             return View(viewModel);
         }
     }

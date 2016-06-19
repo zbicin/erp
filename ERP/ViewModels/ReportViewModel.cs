@@ -17,6 +17,13 @@ namespace ERP.ViewModels
         public int DeliveredOrders { get; set; }        
         public int CanceledOrders { get; set; }
 
-        public List<Item> Items { get; set; }
+        public List<ReportItemViewModel> Items { get; set; }
+    }
+
+    public class ReportItemViewModel
+    {
+        public String Name { get; set; }
+        public int QuantityInStock { get; set; }
+        public int QuantityInOrders { get; set; }
     }
 }

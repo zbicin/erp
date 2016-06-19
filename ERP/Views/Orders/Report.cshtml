@@ -30,12 +30,17 @@
     <tr>
         <th>Item</th>
         <th>Quantity in stock</th>
+        <th>Quantity in orders</th>
     </tr>
-    @foreach (var item in Model.Items)
+    @if (Model.Items != null)
     {
-        <tr>
-            <td>@item.Name</td>
-            <td>@item.QuantityInStock</td>
-        </tr>
-    }
+        foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.QuantityInStock</td>
+                <td>@item.QuantityInOrders</td>
+            </tr>
+        }   
+    }        
 </table>
